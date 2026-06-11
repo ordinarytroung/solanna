@@ -1,0 +1,107 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.fdb_latexmk
+*.fls
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python packages
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+
+# Python virtual env
+.venv/
+venv/
+env/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary
+*.tmp
+*.temp
+.tmp/
+temp/
+
+# Hashes file (generated)
+hashes.json
+
+# LaTeX auxiliary
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# PDF outputs (generated)
+main.pdf
+main_final.pdf
+main_verified.pdf
+
+# LaTeX auxiliary directory
+*.aux
+*.bbl
+*.blg
+*.log
+*.out

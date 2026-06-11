@@ -1,0 +1,107 @@
+\appendix
+\section{Supplementary Diagnostic Tables}
+\label{app:supplementary_diagnostics}
+
+This appendix contains diagnostic tables that support reproducibility and reviewer auditability but are not required to state the main predictive-performance claim in the body of the paper.
+
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\caption{Threshold sensitivity analysis for the Full Hybrid v7 (Binary Meta-Classifier) model on the test split. The threshold $\tau$ determines the probability threshold: predict ``up'' if $P(\text{up}) \geq \tau$, ``down'' otherwise. The test set contains $n=5{,}116$ non-flat event-return rows after excluding flat (zero-return) days.}
+\label{tab:threshold}
+\small
+\begin{tabular}{l c c c c p{4.2cm}}
+\toprule
+Threshold ($\tau$) & DirAcc (\%) & F1 & \# Up & \# Down & Interpretation \\
+\midrule
+0.35 & 44.90 & 0.3480 & 4,892 & 224 & Strong up-bias; over-predicts positive \\
+0.40 & 49.30 & 0.4456 & 4,375 & 741 & Moderate up-bias \\
+0.45 & 53.36 & 0.5249 & 3,571 & 1,545 & Balanced operating point \\
+0.49 & \textbf{54.09} & \textbf{0.5404} & 2,724 & 2,392 & Validation-selected threshold \\
+0.50 (default) & 54.42 & 0.5412 & 2,465 & 2,651 & Default operating point \\
+0.55 & 55.39 & 0.5157 & 1,441 & 3,675 & Moderate down-bias \\
+0.60 & \textbf{57.04} & 0.4805 & 751 & 4,365 & Peak directional accuracy \\
+0.65 & 56.96 & 0.4191 & 275 & 4,841 & Strong down-bias \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\caption{Full Hybrid v11--v15 strict three-class remediation attempts on the same 5,373 down/flat/up test rows. Each attempt preserves flat rows and is compared against the same paired LightGBM and GRU baselines. The table is a negative-result boundary analysis, not a superiority claim.}
+\label{tab:three_class_negative_sweep}
+\small
+\begin{tabular}{p{4.4cm}ccc p{4.2cm}}
+\toprule
+Model & Test F1 & DirAcc (\%) & MAE/RMSE (\%) & Interpretation \\
+\midrule
+Paired LightGBM baseline & \textbf{0.3810} & \textbf{55.91} & \textbf{1.6789}/2.4139 & Strongest three-class baseline; never predicts flat \\
+Paired GRU baseline & 0.3429 & 50.83 & 1.6869/\textbf{2.4109} & Sequence baseline \\
+Full Hybrid v11 calibrated tree & 0.3350 & 45.43 & -- & Calibrated tree attempt below both baselines \\
+Full Hybrid v12 hierarchical & 0.3596 & 47.85 & 1.7031/2.4134 & Best hybrid remediation, still below LightGBM \\
+Full Hybrid v13 advanced meta-features & 0.3447 & 48.45 & 1.7116/2.4262 & Validation gain failed to generalize under temporal shift \\
+Full Hybrid v14 uncertainty deadband & 0.3130 & 44.30 & 1.7176/2.4287 & Deadband strategy worsened test performance \\
+Full Hybrid v15 ordinal deadband regressor & 0.2764 & 42.94 & 1.7167/2.4249 & Regression-to-deadband strategy remained below both baselines \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{3pt}
+\caption{Meta-classifier stability matrix comparing fixed-probe stacking models under the binary non-flat protocol across static paired and walk-forward settings. The walk-forward columns are diagnostic fixed-architecture probes and should not be read as the selected per-window pipeline metrics from Table~\ref{tab:walk_forward}.}
+\label{tab:stability_matrix}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Stacking Model & Static Val F1 & Static Test F1 & Static Test DirAcc & WF Pooled F1 & WF Pooled DirAcc & Avg WF Window F1 \\
+\midrule
+\textbf{LogisticRegression} & 0.4951 & \textbf{0.5385} & \textbf{53.87} & 0.4996 & 50.54 & \textbf{0.4799} \\
+\textbf{CatBoost} & 0.4893 & 0.4781 & 49.30 & 0.4776 & 48.41 & 0.4616 \\
+\textbf{XGBoost} & \textbf{0.5076} & 0.5338 & 53.38 & \textbf{0.5116} & \textbf{51.18} & 0.4778 \\
+\textbf{Blend (Cat+XGB)} & 0.4991 & 0.5112 & 52.01 & 0.5055 & 50.66 & 0.4774 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\setlength{\tabcolsep}{4pt}
+\caption{Extended out-of-sample metrics breakdown across five non-overlapping walk-forward windows ($n=9{,}062$ total event-return rows) under the binary non-flat protocol.}
+\label{tab:extended_wf}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+Window & Rows & Full F1 & Full DirAcc & LGBM F1 & LGBM DirAcc & GRU F1 & GRU DirAcc \\
+\midrule
+W1 (2025-Sep-Oct) & 2,281 & 0.3608 & 45.86 & 0.5107 & 51.07 & 0.4227 & 42.39 \\
+W2 (2025-Nov-Dec) & 1,728 & 0.5037 & 56.60 & 0.4369 & 43.69 & 0.4706 & 48.03 \\
+W3 (2026-Jan-Feb) & 1,315 & 0.3871 & 55.44 & 0.5399 & 54.07 & 0.5106 & 54.14 \\
+W4 (2026-Mar-Apr) & 1,338 & 0.4898 & 49.70 & 0.4923 & 51.27 & 0.5667 & 56.73 \\
+W5 (2026-Apr-May) & 2,400 & 0.4160 & 63.75 & 0.5332 & 54.96 & 0.5036 & 58.67 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\setlength{\tabcolsep}{4pt}
+\caption{Empirical split conformal prediction coverage and average interval width (in price units) at the 95\% nominal target ($\alpha = 0.05$) across representative equities. Volatility-regime calibration separates empirical coverage for low and high volatility segments.}
+\label{tab:conformal}
+\small
+\begin{tabular}{lccccc}
+\toprule
+Ticker & Nominal & Global & Low-Vol & High-Vol & Avg Width \\
+\midrule
+ACB.VN & 0.95 & 1.000 & 1.000 & 1.000 & 4.73 \\
+BID.VN & 0.95 & 1.000 & -- & 1.000 & 8.90 \\
+CTG.VN & 0.95 & 1.000 & 1.000 & 1.000 & 5.62 \\
+FPT.VN & 0.95 & 1.000 & 1.000 & 1.000 & 19.82 \\
+HPG.VN & 0.95 & 1.000 & 1.000 & 1.000 & 4.37 \\
+MBB.VN & 0.95 & 0.988 & 0.980 & 1.000 & 3.94 \\
+VIC.VN & 0.95 & 0.988 & 0.833 & 1.000 & 28.01 \\
+VNM.VN & 0.95 & 1.000 & 1.000 & 1.000 & 9.17 \\
+\bottomrule
+\end{tabular}
+\end{table}
