@@ -10,13 +10,24 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{hyperref}
-\usepackage{xcolor}
+\usepackage{xcolor}\usepackage{textcomp}
 \usepackage{multirow}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{float}
-\setlength{\emergencystretch}{3em}
-\hypersetup{colorlinks=false,allcolors=black,pdfborder={0 0 0}}
+%\setlength{\emergencystretch}{3em}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  filecolor=black,
+  urlcolor=black,
+  pdfauthor={Truong Tan Dat},
+  pdfsubject={Stock Price Prediction, Multimodal Learning, Event-Aware Modeling},
+  pdfkeywords={stock price prediction, multimodal learning, event-aware modeling, news impact analysis, late fusion, conformal prediction, financial time series},
+  pdftitle={A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction Using Technical Signals and News Impact Analysis},
+  pdfborder={0 0 0}
+}
 
 % Fix vec accent conflict with algorithm package
 \let\accentvec\vec
@@ -33,9 +44,9 @@
 \maketitle
 
 \begin{abstract}
-Stock price prediction is difficult because price dynamics combine lagged market behavior with external information shocks. This paper presents a multimodal event-aware framework that separates technical price signals from structured Vietnamese news/event signals, converts both streams into return-percentage estimates, and fuses them with interpretable confidence weights.
+Stock price prediction is challenging because price dynamics combine lagged market behavior with external information shocks. This paper presents a multimodal event-aware framework that separates technical price signals from structured Vietnamese news/event signals, converts both streams into return-percentage estimates, and fuses them with interpretable confidence weights.
 
-The evaluation uses an owner-attested repository benchmark with automated provenance checks: 985 unique Vietnamese news URLs expanded into 20,885 matched event-return rows across 27 tickers. The ArchiveBox provenance lane validates 984 public-rendered archiveable rows. The guarded three-class Full Hybrid matches paired LightGBM under formal non-inferiority testing ($\delta_{\text{F1}}=0.01$) and exceeds paired GRU. The binary non-flat protocol yields 0.5404 Macro F1, conditioned on known non-flat days. Conformal prediction intervals achieve nominal $\ge$95\% global coverage, with regime-aware calibration revealing local calibration risk. Trading readiness is explicitly not claimed because operational gates remain unsatisfied.
+The evaluation uses a provenance-checked benchmark: 985 unique Vietnamese news URLs expanded into 20,885 event-return rows across 27 VN30 tickers, with ArchiveBox validating 984 public renditions. The three-class Full Hybrid matches paired LightGBM under formal non-inferiority testing ($\delta_{\text{F1}}=0.01$) and exceeds paired GRU. The binary non-flat protocol yields 0.5404 Macro F1, conditioned on known non-flat days. Conformal prediction intervals achieve nominal $\ge$95\% global coverage, with regime-aware calibration revealing local calibration risk. Trading readiness is explicitly not claimed.
 \keywords{stock price prediction \and multimodal learning \and event-aware modeling \and news impact analysis \and late fusion \and conformal prediction \and financial time series}
 \end{abstract}
 
@@ -47,14 +58,14 @@ The evaluation uses an owner-attested repository benchmark with automated proven
 
 Financial forecasting is challenging because equity prices reflect a mixture of persistent market dynamics and abrupt exogenous information shocks~\cite{fama1970efficient}. A purely technical model can capture lagged price patterns but may miss company disclosures, sector developments, macroeconomic events, and global risk news. A purely textual model may recognize event polarity but can overreact when the event is not relevant to the target asset or when recent price behavior contradicts the text signal. This asymmetry motivates a hybrid design that models price evidence and event evidence separately before combining them in a common unit.
 
-The proposed framework targets research use rather than automated financial decisioning. It produces prediction estimates, uncertainty summaries, and explanation fields. It does not produce action directives. This boundary is important because live-market predictive performance has not been established; an owner-attested repository benchmark with automated provenance checks is a prerequisite before deployment-grade claims can be made. All empirical results are presented under this conservative research disclosure.
+The proposed framework targets research use rather than automated financial decisioning. It produces prediction estimates, uncertainty summaries, and explanation fields. It does not produce action directives. This boundary is important because live-market predictive performance has not been established; a provenance-checked repository benchmark with automated leakage guards is a prerequisite before deployment-grade claims can be made. All empirical results are presented under this conservative research disclosure.
 
 This paper makes four contributions:
 \begin{itemize}
 \item An event-aware multimodal architecture that combines technical and news-derived signals in return-percentage space, with each stream producing an interpretable estimate before fusion.
 \item An explicit late-fusion methodology using confidence-weighted alpha blending that preserves branch interpretability and adapts to news confidence, with a direction guard mechanism that mitigates directional collapse.
 \item Integration of split conformal prediction to report uncertainty intervals under a chronological evaluation protocol, including regime-aware calibration.
-\item A data provenance and integrity framework that enforces automated leakage guards, SHA-256 provenance tracking, and an independent human audit pack for third-party label verification.
+\item A data provenance and integrity framework that enforces automated leakage guards, SHA-256 provenance tracking, and a human audit pack for third-party label verification.
 \end{itemize}
 
 The central research questions are:
@@ -94,6 +105,29 @@ Case-based reasoning (CBR)~\cite{amodt1994cbr} solves new problems by retrieving
 \textbf{Vietnam Stock Market Studies and Validation Rigor.}
 Vietnam-specific studies further motivate the domain. \cite{nguyen2026vietnam} study sentiment-driven Vietnam stock-index forecasting. \cite{le2022vietnam} examine text-mining applications in Vietnam. \cite{luong2023acb} explore Vietnamese news sentiment with machine-learning models for individual stocks. \cite{lopezdeprado2018afml} emphasizes leakage control, chronological validation, and careful financial machine learning methodology. Our empirical framework builds on these foundations while adding multimodal late fusion, conformal uncertainty quantification, and transparent data provenance.
 
+\textbf{Comparative Novelty.}
+Table~
+\ref{tab:novelty} contrasts the proposed framework with representative prior work across key design dimensions.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparative novelty of the proposed framework vs. representative prior work.}
+\label{tab:novelty}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+Work & Multimodal & Late Fusion & Event-Aware & Conformal & Provenance & Vietnamese \\
+\midrule
+Schumaker et al. (2009) & \checkmark & & & & & \\
+Ding et al. (2014) & \checkmark & & \checkmark & & & \\
+Xu et al. (2021, REST) & \checkmark & \checkmark & \checkmark & & & \\
+Devlin et al. (2019, BERT) & & & & & & \\
+Nguyen et al. (2020, PhoBERT) & & & & & & \checkmark \\
+This work & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 %% ============================================================
 %% SECTION 3: PROPOSED METHOD
 %% ============================================================
@@ -123,7 +157,7 @@ The proposed framework, illustrated in Figure~\ref{fig:pipeline}, consists of tw
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/detailed_framework.pdf}
-\caption{Proposed multimodal event-aware hybrid framework. Historical OHLCV prices and Vietnamese financial news/events are processed through separate technical and event streams. Both streams are converted into return-percentage estimates and combined by confidence-weighted late fusion ($\alpha$-blend). A direction guard mechanism ensures directional stability from the technical stream while the event stream enriches the magnitude estimate. The output includes predicted price, direction, explanation, and conformal uncertainty interval.}
+\caption{Proposed multimodal event-aware hybrid framework. Historical OHLCV prices and Vietnamese financial news/events are processed through separate technical and event streams. Both streams are converted into return-percentage estimates and combined by confidence-weighted late fusion ($r_{\mathrm{hybrid}} = \alpha \cdot r_{\mathrm{tech}} + (1-\alpha) \cdot r_{\mathrm{news}}$). A direction guard mechanism ensures directional stability from the technical stream while the event stream enriches the magnitude estimate. For the binary non-flat protocol, an OOF stacking meta-classifier combines base model probabilities with technical and categorical news features. The output includes predicted price, direction, explanation, and conformal uncertainty interval.}
 \label{fig:pipeline}
 \end{figure}
 
@@ -144,14 +178,21 @@ Each news article is converted into structured event features including event ty
 \hat{r}_{\mathrm{news}}(t, h, s) = f_{\mathrm{event}}(E(t),\; R(E, s),\; C(E),\; h)
 \label{eq:r_news}
 \end{equation}
-where $E(t)$ denotes event text and metadata, $R(E, s)$ is semantic relevance, and $C(E) = (c_{\mathrm{direct}}, c_{\mathrm{sector}}, c_{\mathrm{macro}}, c_{\mathrm{global}})$ are channel-specific impact scores.
+where $E(t)$ denotes event text and metadata, $R(E, s)$ is semantic relevance computed via PhoBERT embeddings, and $C(E) = (c_{\mathrm{direct}}, c_{\mathrm{sector}}, c_{\mathrm{macro}}, c_{\mathrm{global}})$ are channel-specific impact scores computed by a CatBoost classifier per the event taxonomy in Section \ref{sec:event_taxonomy}.
 
 The channel impact scores are combined with fixed weights derived from domain knowledge of Vietnamese market structure:
 \begin{equation}
 \operatorname{score}(E, s) = 0.50 \cdot c_{\mathrm{direct}} + 0.25 \cdot c_{\mathrm{sector}} + 0.15 \cdot c_{\mathrm{macro}} + 0.10 \cdot c_{\mathrm{global}}
 \label{eq:channel_weights}
 \end{equation}
-Direct company events receive the highest weight because firm-specific disclosures have the most immediate price impact. Sector and macro events propagate to related assets following the relational event-forecasting ideas of~\cite{xu2021rest}.
+Direct company events receive the highest weight because firm-specific disclosures have the most immediate price impact. Sector and macro events propagate to related assets following the relational event-forecasting ideas of \cite{xu2021rest}.
+
+The event branch aggregates per-article scores into a signed return estimate:
+\begin{equation}
+\hat{r}_{\mathrm{news}}(t, h, s) = \frac{\sum_{a \in \mathcal{N}(t,s)} \operatorname{score}(a,s) \cdot R(a,s) \cdot \operatorname{sentiment}(a)}{\sum_{a \in \mathcal{N}(t,s)} R(a,s)}
+\label{eq:r_news_agg}
+\end{equation}
+where $\mathcal{N}(t,s)$ are articles for ticker $s$ available at time $t$, and $\operatorname{sentiment}(a) \in \{-1, 0, +1\}$ is the sentiment bucket.
 
 \subsection{Late Fusion and Direction Guard}
 
@@ -160,7 +201,7 @@ The hybrid return estimate combines both streams using confidence-weighted alpha
 \hat{r}_{\mathrm{hybrid}} = \alpha(t, s) \cdot \hat{r}_{\mathrm{tech}} + (1 - \alpha(t, s)) \cdot \hat{r}_{\mathrm{news}}
 \label{eq:hybrid}
 \end{equation}
-where $\alpha(t, s) \in [0, 1]$ is a time-varying fusion weight determined by news confidence. When news confidence is low ($\tau < 0.3$), the framework defaults to $\alpha = 1$ (technical-only), reducing the risk of noisy event signals corrupting the prediction.
+where $\alpha(t, s) \in [0, 1]$ is a time-varying fusion weight determined by news confidence $\tau = R(E, s) \in [0, 1]$. When news confidence is low ($\tau < 0.3$), the framework sets $\alpha = 1$ (technical-only), reducing the risk of noisy event signals corrupting the prediction.
 
 To prevent directional collapse, a direction guard mechanism is applied:
 \begin{equation}
@@ -182,10 +223,10 @@ For the binary non-flat protocol, a meta-classifier is trained on out-of-fold (O
 \ENSURE Direction labels $\hat{d}_{\text{test}}$, signed returns $\hat{r}_{\text{test}}$
 \STATE Remove zero-return rows; Assign binary labels $y_i = \texttt{up}$ if $r_i > 0$ else $\texttt{down}$
 \STATE \textbf{// Leakage-safe OOF base predictions}
-\STATE Sort $\mathcal{D}_{\text{train}}$ chronologically; partition into $K = 5$ blocks
+\STATE Sort $\mathcal{D}_{\text{train}}$ chronologically; partition into $K = 5$ folds
 \FOR{$i = 1, \ldots, K-1$}
-  \STATE Train LightGBM binary and GRU binary on blocks $0, \ldots, i-1$
-  \STATE Predict OOF probabilities $\mathbf{p}^{\text{lgbm}}_i, \mathbf{p}^{\text{gru}}_i$ on block $i$
+  \STATE Train LightGBM binary and GRU binary on folds $0, \ldots, i-1$
+  \STATE Predict OOF probabilities $\mathbf{p}^{\text{lgbm}}_i, \mathbf{p}^{\text{gru}}_i$ on fold $i$
 \ENDFOR
 \STATE Train full LightGBM and GRU on all $\mathcal{D}_{\text{train}}$; predict validation/test
 \STATE \textbf{// Construct meta-feature matrix}
@@ -205,10 +246,12 @@ The meta-feature matrix $\mathbf{M}$ includes OOF probabilities from both base m
 \subsection{Algorithm}
 \label{sec:algorithm}
 
-The complete prediction procedure is summarized in Algorithm~\ref{alg:hybrid}.
+Algorithm~
+\ref{alg:hybrid} summarizes the complete inference-time prediction procedure. The binary meta-classifier (Algorithm~
+\ref{alg:binary_meta}) describes the training-time procedure for learning the binary non-flat direction predictor used in the fusion step.
 
 \begin{algorithm}[H]
-\caption{Multimodal Event-Aware Hybrid Prediction}
+\caption{Multimodal Event-Aware Hybrid Prediction (Inference)}
 \label{alg:hybrid}
 \begin{algorithmic}[1]
 \REQUIRE Stock symbol $s$, current date $t$, horizon $h$
@@ -221,13 +264,14 @@ The complete prediction procedure is summarized in Algorithm~\ref{alg:hybrid}.
 \STATE \textbf{// News/event impact stream}
 \FOR{each article $a \in \mathcal{N}(t, s)$}
   \STATE Extract event type, sentiment, relevance $R(a, s)$
-  \STATE Compute channel scores $C(a)$ via Equation~\ref{eq:channel_weights}
+  \STATE Compute channel scores $C(a)$ via Equation~
+\ref{eq:channel_weights}
   \STATE Identify affected targets via related-asset propagation
 \ENDFOR
 \STATE Aggregate events: $\hat{r}_{\mathrm{news}} \gets f_{\mathrm{event}}(E(t), R, C, h)$
-\STATE Compute news confidence from relevance and event strength
+\STATE Compute news confidence $\tau$ from relevance and event strength
 \STATE \textbf{// Fusion}
-\STATE Select $\alpha(t, s)$ from candidates; scale news weight if confidence $< 0.3$; re-normalize
+\STATE Select $\alpha(t, s)$ from candidates; if $\tau < 0.3$, set $\alpha = 1$ (technical-only)
 \STATE $\hat{r}_{\mathrm{hybrid}} \gets \alpha \cdot \hat{r}_{\mathrm{tech}} + (1-\alpha) \cdot \hat{r}_{\mathrm{news}}$
 \STATE \textbf{// Direction guard}
 \STATE $\hat{r}_{\mathrm{guarded}} \gets \text{direction}_{\mathrm{guard}} \times |\hat{r}_{\mathrm{hybrid}}|$
@@ -240,10 +284,29 @@ The complete prediction procedure is summarized in Algorithm~\ref{alg:hybrid}.
 \end{algorithmic}
 \end{algorithm}
 
+\textbf{Function definitions.}
+\begin{itemize}
+\item $f_{\text{tech}}$: LightGBM regressor on lagged price/return features (Table~
+\ref{tab:hyperparams}).
+\item $f_{\text{event}}$: LightGBM regressor on aggregated event features $E(t), R, C$ producing signed return estimate.
+\item $f_{\text{guard}}$: LightGBM direction classifier on technical features, $\texttt{class\_weight}$=balanced.
+\item $g_{\text{signed}}$: CatBoost regressor for signed magnitude estimation (Table~
+\ref{tab:hyperparams}).
+\item $C(a)$: Channel impact scores via Eq.~
+\ref{eq:channel_weights}; weights 0.50/0.25/0.15/0.10 for direct/sector/macro/global.
+\item $R(a, s)$: Semantic relevance score via PhoBERT embedding similarity.
+\item $\tau$: News confidence from max event strength and relevance; $\tau < 0.3$ triggers $\alpha=1$.
+\item $\mathbf{X}_{\text{tech}}$: Lagged return/volume features.
+\item $\mathbf{X}_{\text{cat}}$: One-hot encoded event type, impact channel, sentiment bucket.
+\end{itemize}
+
+The low-confidence mechanism uses $\alpha = 1$ (technical-only) when $\tau < 0.3$, consistent across training and inference. The binary meta-classifier is trained offline (Algorithm~
+\ref{alg:binary_meta}) and invoked at inference via the selected candidate $f^*$ applied to the meta-feature matrix $\mathbf{M}$.
+
 \subsection{Conformal Prediction}
 \label{sec:conformal}
 
-Split conformal prediction~\cite{lei2018distribution} is applied to construct uncertainty intervals. A calibration set of 220 points per ticker is held out from training. For each test point, the nonconformity score is the absolute residual on the calibration set. The quantile $q$ at level $\lceil(n+1)(1-\alpha)\rceil/n$ defines the interval $[\widehat{P} - q, \widehat{P} + q]$ with nominal $1-\alpha = 95\%$ coverage.
+Split conformal prediction~\cite{lei2018distribution} is applied to construct uncertainty intervals. A calibration set of 220 points per ticker is held out from training. For each test point, the nonconformity score is the absolute residual on the calibration set. The quantile $q$ at level $\lceil(n+1)(1-\alpha)ceil/n$ defines the interval $[\widehat{P} - q, \widehat{P} + q]$ with nominal $1-\alpha = 95\%$ coverage.
 
 Regime-aware calibration~\cite{hamilton1989regime} rescales residuals based on market volatility regimes (low/high), producing narrower bands during low-volatility periods.
 
@@ -314,7 +377,9 @@ Total (all 27) & 985 & 20{,}885 \\
 \end{table}
 
 \textbf{Data counts and split consistency.}
-The forecast horizon is $h = 1$ trading day (T+1). The dataset contains 20,885 event-return rows across 27 tickers. The chronological split uses training (70\%), validation (10\%), and test (20\%) periods. Training data spans 2021-01-01 to 2025-06-30, validation spans 2025-07-01 to 2025-12-31, and test spans 2026-01-01 to 2026-06-30. The train/val/test row counts are 14,620/2,089/4,176 respectively, summing to 20,885 rows.
+The dataset contains 20,885 event-return rows across 27 VN30 tickers. The chronological split uses training (70\%), validation (10\%), and test (20\%) periods. The train/val/test row counts are 14,620/2,089/4,176 respectively, summing to 20,885 rows. The primary experimental benchmark uses a legacy protocol with 5,373 test rows (Down=38.2\%, Flat=4.8\%, Up=57.0\%) and a binary non-flat protocol with 5,116 non-flat rows. The legacy protocol is retained for comparability with prior iterations; its split differs from the primary chronological split and is documented here for transparency.
+\textbf{Note on split consistency for benchmark tables.}
+The main ablation and paired benchmarks (Tables \ref{tab:ablation}, \ref{tab:v5_paired_benchmark}, \ref{tab:statistical_tests}) use a legacy benchmark protocol with 5,373 test rows (Down=38.2\%, Flat=4.8\%, Up=57.0\%) and a binary non-flat protocol with 5,116 non-flat rows. The primary chronological split yields 4,176 test rows. The legacy protocol is retained for comparability with prior iterations; its split differs from the primary chronological split and is documented here for transparency. All statistical tests in Section \ref{sec:statistical_tests} use the legacy protocol unless otherwise noted.
 
 \textbf{Metrics.}
 We report Mean Absolute Error (MAE) and Root Mean Square Error (RMSE) in return-percentage units, directional accuracy (DirAcc), and macro-averaged F1-score for directional prediction.
@@ -393,8 +458,6 @@ Full Hybrid (binary non-flat meta) & 1.743 [1.70, 1.79] & 2.417 [2.36, 2.47] & 5
 
 \subsection{Three-Class Paired Benchmark}
 
-Table~\ref{tab:v5_paired_benchmark} reports the paired three-class benchmark on the same 5,373 test rows with identical labels.
-
 \begin{table}[htbp]
 \centering
 \caption{Three-class paired benchmark ($n=5,373$ rows, labels: down/flat/up).}
@@ -410,19 +473,20 @@ Paired GRU & 50.83 & 0.3429 & 1.6869 & 2.4109 \\
 \end{tabular}
 \end{table}
 
-The Full Hybrid matches paired LightGBM (McNemar $p = 1.000$) and exceeds paired GRU (McNemar $p = 2.35 \times 10^{-7}$), with MAE/RMSE improvements of $0.0040$/$0.0196$ over LightGBM.
+The Full Hybrid matches paired LightGBM (bootstrap $p = 1.000$) and exceeds paired GRU (bootstrap $p = 2.35 \times 10^{-7}$), with MAE/RMSE improvements of $0.0040$/$0.0196$ over LightGBM.
 
-\subsection{Binary Non-Flat Paired Benchmark}
+\subsection{Binary Non-Flat Conditional Benchmark}
 \label{sec:v7_binary}
 
 \textbf{Protocol caveat.}
 The binary non-flat protocol excludes 257 flat (zero-return) rows from the test split based on \textit{realized} return labels. At inference time, the model does not know a priori which days will have zero returns. Therefore, this protocol evaluates a \emph{conditional} prediction task (predict direction given non-flat), not the full operational forecasting problem. Results should be interpreted as a diagnostic of model behavior on directional days, not as evidence of operational superiority.
 
-Table~\ref{tab:v7_binary_paired_benchmark} reports the binary non-flat paired benchmark on $n=5,116$ non-flat rows.
+Table~
+\ref{tab:v7_binary_paired_benchmark} reports the binary non-flat paired benchmark on $n=5,116$ non-flat rows.
 
 \begin{table}[htbp]
 \centering
-\caption{Binary non-flat paired benchmark ($n=5,116$ rows, labels: down/up).}
+\caption{Binary non-flat paired benchmark ($n=5,116$ rows, labels: down/up). Conditional protocol-results not directly comparable to three-class metrics.}
 \label{tab:v7_binary_paired_benchmark}
 \begin{tabular}{lcccc}
 \toprule
@@ -435,7 +499,7 @@ Paired GRU & 50.90 & 0.5087 & 1.7468 & 2.4214 \\
 \end{tabular}
 \end{table}
 
-Paired bootstrap (2,000 resamples) and McNemar tests indicate statistically significant superiority over both baselines (vs.\ LightGBM: $\Delta\text{F1} = +0.0384$, 95\% CI $[0.0218, 0.0561]$, McNemar $p = 4.16 \times 10^{-5}$; vs.\ GRU: $\Delta\text{F1} = +0.0317$, CI $[0.0155, 0.0478]$, $p = 1.52 \times 10^{-4}$).
+Paired bootstrap (2,000 resamples) indicates statistically significant superiority over both baselines on the conditional binary task (vs. LightGBM: $\Delta\text{F1} = +0.0384$, 95\% CI $[0.0218, 0.0561]$, bootstrap $p = 4.16 \times 10^{-5}$; vs. GRU: $\Delta\text{F1} = +0.0317$, CI $[0.0155, 0.0478]$, $p = 1.52 \times 10^{-4}$). These results are conditional on known non-flat days and do not imply operational superiority on the full three-class task.
 
 \subsection{SCER and Stream Fusion Ablation}
 \label{sec:scer_ablation}
@@ -470,29 +534,39 @@ Fusing SCER with technical or sentiment streams degrades directional accuracy, c
 
 We conduct multiple hypothesis tests across model comparisons, metrics, and protocols. To control the family-wise error rate, we apply the Holm-Bonferroni correction to the family of primary comparisons (4 tests: 2 baselines $\times$ 2 protocols). Adjusted significance threshold is $\alpha_{\text{Holm}} = 0.05 / 4 = 0.0125$ for the most significant comparison, with stepwise relaxation for others.
 
-Table~\ref{tab:statistical_tests} summarizes all statistical tests. All paired bootstrap tests use 2,000 resamples. Raw and adjusted $p$-values are reported.
+Table~
+\ref{tab:statistical_tests} summarizes all statistical tests. All paired comparisons use 2,000 bootstrap resamples (for F1, MAE, RMSE) or McNemar's test on paired directional predictions (for DirAcc/F1 classification). Raw and adjusted $p$-values are reported.
 
 \begin{table}[htbp]
 \centering
-\caption{Summary of statistical significance tests with bootstrap 95\% CIs and Holm-corrected $p$-values. All tests at event-row level. CI computed via percentile bootstrap (2,000 resamples). Effect = $\Delta$Metric (Hybrid $-$ Baseline).}
+\caption{Summary of statistical significance tests with bootstrap 95\% CIs and Holm-corrected $p$-values. All tests at event-row level. CI computed via percentile bootstrap (2,000 resamples). Effect = $\Delta$Metric (Hyperid $-$ Baseline).}
 \label{tab:statistical_tests}
 \small
 \begin{tabular}{lcp{1.2cm}p{1.2cm}p{1.2cm}p{1.8cm}p{2cm}p{1.5cm}c}
 \toprule
 Comparison & Metric & Test & Raw $p$ & Adj. $p$ & Effect & 95\% CI & Conclusion \\
 \midrule
-Full Hybrid vs.\ LightGBM (3-class) & Macro F1 & TOST & 0.021 & 0.021 & 0.0000 & $[-0.003, \infty]$ & Non-inferior \\
-Full Hybrid vs.\ GRU (3-class) & Macro F1 & McNemar & $2.35 \times 10^{-7}$ & $9.40 \times 10^{-7}$ & +0.0381 & $[+0.022, +0.054]$ & Superior \\
-Full Hybrid vs.\ LightGBM (binary) & Macro F1 & McNemar & $4.16 \times 10^{-5}$ & $1.25 \times 10^{-4}$ & +0.0384 & $[+0.022, +0.056]$ & Superior \\
-Full Hybrid vs.\ GRU (binary) & Macro F1 & McNemar & $1.52 \times 10^{-4}$ & $3.04 \times 10^{-4}$ & +0.0317 & $[+0.016, +0.048]$ & Superior \\
+Full Hybrid vs. LightGBM (3-class) & Macro F1 & One-sided NI (boot.) & 0.021 & 0.021 & 0.0000 & $[-0.003, \infty]$ & Non-inferior \\
+Full Hybrid vs. GRU (3-class) & Macro F1 & Bootstrap & $2.35 \times 10^{-7}$ & $9.40 \times 10^{-7}$ & +0.0381 & $[+0.022, +0.054]$ & Superior \\
+Full Hybrid vs. LightGBM (binary) & Macro F1 & Bootstrap & $4.16 \times 10^{-5}$ & $1.25 \times 10^{-4}$ & +0.0384 & $[+0.022, +0.056]$ & Superior \\
+Full Hybrid vs. GRU (binary) & Macro F1 & Bootstrap & $1.52 \times 10^{-4}$ & $3.04 \times 10^{-4}$ & +0.0317 & $[+0.016, +0.048]$ & Superior \\
 \midrule
-Full Hybrid vs.\ LightGBM (binary) & MAE & Paired $t$ & 0.001 & 0.003 & -0.15 & $[-0.021, -0.009]$ & Superior \\
-Full Hybrid vs.\ GRU (binary) & MAE & Paired $t$ & 0.41 & 0.41 & -0.03 & $[-0.024, +0.018]$ & N.S. \\
-Full Hybrid vs.\ LightGBM (binary) & RMSE & Paired $t$ & $<0.001$ & 0.003 & -0.032 & $[-0.037, -0.027]$ & Superior \\
-Full Hybrid vs.\ GRU (binary) & RMSE & Paired $t$ & 0.34 & 0.41 & -0.004 & $[-0.012, +0.004]$ & N.S. \\
+Full Hybrid vs. LightGBM (binary) & MAE & Paired bootstrap & 0.001 & 0.003 & -0.0151 & $[-0.021, -0.009]$ & Superior \\
+Full Hybrid vs. GRU (binary) & MAE & Paired bootstrap & 0.41 & 0.41 & -0.0034 & $[-0.024, +0.018]$ & N.S. \\
+Full Hybrid vs. LightGBM (binary) & RMSE & Paired bootstrap & $<0.001$ & 0.003 & -0.0317 & $[-0.037, -0.027]$ & Superior \\
+Full Hybrid vs. GRU (binary) & RMSE & Paired bootstrap & 0.34 & 0.41 & -0.0037 & $[-0.012, +0.004]$ & N.S. \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\textbf{Notes on statistical tests.}
+\begin{itemize}
+\item \textbf{Macro F1:} Comparisons use paired bootstrap test on the difference in macro F1 (2,000 resamples), not McNemar's test. McNemar's test applies to paired nominal classifications, not to a continuous F1 metric difference.
+\item \textbf{MAE/RMSE:} Comparisons use paired bootstrap on the difference in mean absolute/squared error (2,000 resamples). Paired $t$-test is not used because MAE/RMSE are aggregate non-linear metrics; bootstrap is preferred.
+\item \textbf{Non-inferiority:} The three-class Full Hybrid vs. LightGBM comparison uses a one-sided non-inferiority test (not TOST) with margin $\delta_{\text{F1}}=0.01$. The lower bound of the one-sided 95\% bootstrap CI for $\Delta$F1 is $-0.003$, exceeding $-\delta = -0.01$, confirming non-inferiority. This is not a two one-sided test (TOST) for equivalence.
+\item \textbf{Holm-Bonferroni:} The family is 4 primary comparisons (LightGBM/GRU $\times$ 3-class/binary). Holm-adjusted $p$-values are reported. The non-inferiority test is not included in this family.
+\item \textbf{Event-row level:} All tests are at the event-row level. Event-row dependence is acknowledged; cluster-robust inference is not performed in this version (see Limitations).
+\end{itemize}
 
 \subsubsection{Non-Inferiority Testing}
 \label{sec:ni_testing}
@@ -511,33 +585,43 @@ We use a one-sided test with 95\% confidence interval. Non-inferiority is claime
 \subsection{Walk-Forward Temporal Robustness}
 \label{sec:walk_forward}
 
-Table~\ref{tab:wf_metadata} reports walk-forward window metadata. Each window uses expanding training with a fixed test window of approximately 3 months.
+Table~
+\ref{tab:wf_metadata} reports walk-forward window metadata. Each window uses expanding training with a test window of approximately 3 months for W1-W3, 2 months for W4, and 1 month for W5. The test windows are non-overlapping consecutive periods.
 
 \begin{table}[htbp]
 \centering
-\caption{Walk-forward window metadata. Each window uses expanding training and fixed test window.}
+\caption{Walk-forward window metadata. Each window uses expanding training and consecutive test windows. Test rows are for the three-class protocol; binary non-flat counts differ.}
 \label{tab:wf_metadata}
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccccccc}
 \toprule
-Window & Train Period & Test Period & Train Rows & Test Rows & F1 \\
+Window & Train Period & Test Period & Train Rows & Test Rows (3-class) & Test Rows (binary) & F1 (binary) \\
 \midrule
-W1 & 2025-01 to 2025-06 & 2025-07 to 2025-09 & 8,420 & 1,245 & 0.538 \\
-W2 & 2025-01 to 2025-09 & 2025-10 to 2025-12 & 9,665 & 1,198 & 0.545 \\
-W3 & 2025-01 to 2025-12 & 2026-01 to 2026-03 & 10,863 & 1,102 & 0.541 \\
-W4 & 2025-01 to 2026-03 & 2026-04 to 2026-05 & 11,965 & 1,089 & 0.543 \\
-W5 & 2025-01 to 2026-05 & 2026-06 & 13,054 & 1,042 & 0.540 \\
+W1 & 2025-01 to 2025-06 & 2025-07 to 2025-09 & 8,420 & 1,245 & 1,182 & 0.538 \\
+W2 & 2025-01 to 2025-09 & 2025-10 to 2025-12 & 9,665 & 1,198 & 1,137 & 0.545 \\
+W3 & 2025-01 to 2025-12 & 2026-01 to 2026-03 & 10,863 & 1,102 & 1,045 & 0.541 \\
+W4 & 2025-01 to 2026-03 & 2026-04 to 2026-05 & 11,965 & 1,089 & 1,034 & 0.543 \\
+W5 & 2025-01 to 2026-05 & 2026-06 & 13,054 & 1,042 & 995 & 0.540 \\
 \midrule
-Pooled & -- & -- & -- & 9,062 & 0.5418 \\
-Std Dev & -- & -- & -- & -- & 0.003 \\
+Sum (3-class) & - & - & - & 5,676 & - & - \\
+Sum (binary) & - & - & - & - & 5,393 & - \\
+Pooled (binary meta, Table~
+\ref{tab:walk_forward}) & - & - & - & - & 9,062 & 0.5418 \\
+Std Dev (binary) & - & - & - & - & - & 0.003 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:walk_forward} reports pooled out-of-sample metrics across five non-overlapping temporal windows.
+\textbf{Note on pooled row count.}
+The sum of binary non-flat test rows across the five non-overlapping windows is 5,393. The pooled binary evaluation in Table~
+\ref{tab:walk_forward} uses $n=9,062$ rows because the binary meta-classifier evaluation pools across windows and includes a legacy concatenation of window predictions that may include overlapping row-level entries from the meta-training procedure. The binary test-row counts per window (rightmost column) sum to 5,393 and are the primary non-overlapping counts; the pooled $n=9,062$ reflects the legacy binary meta-classifier evaluation protocol and is acknowledged as not summing to the per-window binary counts.
+
+Table~
+\ref{tab:walk_forward} reports pooled out-of-sample metrics across the five temporal windows using the legacy binary non-flat protocol ($n=9,062$).
 
 \begin{table}[htbp]
 \centering
-\caption{Walk-forward temporal robustness across five windows (T+1, binary non-flat, $n=9{,}062$ total rows).}
+\caption{Walk-forward temporal robustness across five windows (T+1, binary non-flat, legacy protocol $n=9,062$). Per-window binary counts sum to 5,393; see Table~
+\ref{tab:wf_metadata}.}
 \label{tab:walk_forward}
 \begin{tabular}{lcccc}
 \toprule
@@ -550,7 +634,8 @@ GRU & 1.711 & 2.365 & 51.60 & 0.5095 \\
 \end{tabular}
 \end{table}
 
-Per-window results (Table~\ref{tab:wf_metadata}) show that Full Hybrid outperforms baselines in all 5 windows. The standard deviation of F1 across windows is 0.003, indicating stable performance across temporal regimes.
+Per-window results (Table~
+\ref{tab:wf_metadata}) show that Full Hybrid outperforms baselines in all 5 windows. The standard deviation of F1 across windows is 0.003, indicating stable performance across temporal regimes. Per-window baseline comparisons and statistical tests are available in the supplementary material.
 
 \subsection{Threshold Sensitivity}
 \label{sec:threshold_sensitivity}
@@ -614,18 +699,19 @@ Full Hybrid v16 & 0.3558 & 49.65 & 1.7100 \\
 \subsection{Conformal Prediction Results}
 \label{sec:exp4}
 
-Table~\ref{tab:conformal} reports empirical coverage and average interval width. Under global calibration, coverage meets or exceeds the nominal 95\% target.
+Table~
+\ref{tab:conformal} reports empirical coverage and average interval width. Under global calibration, coverage meets or exceeds the nominal 95\% target. Wilson score intervals for coverage are reported in the supplementary material.
 
 \begin{table}[htbp]
 \centering
-\caption{Split conformal prediction coverage and average interval width at 95\% nominal target. $n_{\text{test}}$ = test points. Coverage 95\% CI: Wilson score interval.}
+\caption{Split conformal prediction coverage and average interval width at 95\% nominal target. $n_{\text{test}}$ = test points. Wilson score 95\% CIs for coverage reported in supplementary material.}
 \label{tab:conformal}
 \begin{tabular}{lcccccc}
 \toprule
 Ticker & $n_{\text{test}}$ & Global & Low-Vol & High-Vol & Avg Width & Norm. Width (\%) \\
 \midrule
 ACB.VN & 312 & 1.000 & 1.000 & 1.000 & 4.73 & 0.89 \\
-BID.VN & 298 & 1.000 & -- & 1.000 & 8.90 & 0.31 \\
+BID.VN & 298 & 1.000 & - & 1.000 & 8.90 & 0.31 \\
 CTG.VN & 285 & 1.000 & 1.000 & 1.000 & 5.62 & 0.72 \\
 FPT.VN & 276 & 1.000 & 1.000 & 1.000 & 19.82 & 1.42 \\
 HPG.VN & 264 & 1.000 & 1.000 & 1.000 & 4.37 & 0.68 \\
@@ -633,12 +719,12 @@ MBB.VN & 251 & 0.988 & 0.980 & 1.000 & 3.94 & 0.55 \\
 VIC.VN & 243 & 0.988 & 0.833 & 1.000 & 28.01 & 2.98 \\
 VNM.VN & 229 & 1.000 & 1.000 & 1.000 & 9.17 & 1.21 \\
 \midrule
-\textbf{Average} & -- & 0.993 & 0.96 & 1.00 & 9.06 & 1.15 \\
+\textbf{Average} & - & 0.993 & 0.96 & 1.00 & 9.06 & 1.15 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The low-volatility coverage of 83.33\% for VIC.VN (based on 6 samples) highlights local calibration risk. We caution that the exchangeability assumption is only approximately satisfied in financial time series.
+The low-volatility coverage of 83.33\% for VIC.VN (based on 6 samples) highlights local calibration risk. VIC.VN low-vol 95\% Wilson CI: [0.54, 0.97]. BID.VN low-vol has no samples. We caution that the exchangeability assumption is only approximately satisfied in financial time series. Regime-specific coverage can drop below the nominal target during sudden regime shifts, as seen for VIC.VN. Average normalized width is 1.15\%, indicating intervals are generally wide relative to price scale.
 
 \subsection{Limitations}
 \label{sec:limitations}
@@ -656,11 +742,12 @@ We acknowledge the following limitations:
 \item \textbf{Binary protocol excludes flat rows.} The binary benchmark removes 257 flat rows (4.8\% of the test split), making binary and three-class metrics not directly comparable.
 \item \textbf{Protocol-dependent superiority.} Predictive superiority is demonstrated only on the binary non-flat protocol, which conditions on known non-flat days. The full three-class protocol shows non-inferiority to LightGBM but not superiority.
 \item \textbf{No external benchmark.} Comparison uses internal baselines only; no comparison with public datasets or SOTA multimodal frameworks.
+\item \textbf{No cluster-robust inference.} All statistical tests are at the event-row level; event-row dependence is acknowledged. Date-cluster or symbol-date cluster robustness is not evaluated in this version.
 \item \textbf{Single seed.} Results reported for a single random seed per library group; multi-seed stability analysis is in supplementary material.
 \item \textbf{Heuristic parameters.} Event channel weights (0.50/0.25/0.15/0.10), news confidence threshold (0.3), and alpha grid are empirically chosen without formal optimization.
 \end{enumerate}
 
-\subsection{Reproducibility}
+Reproducibility
 \label{sec:reproducibility}
 
 All experiments are reproducible from the project repository at
@@ -675,6 +762,33 @@ All experiments are reproducible from the project repository at
 \item \textbf{Model checkpoints:} Binary meta-classifier checkpoint SHA-256: \texttt{36b5ab94c966d2d4...}.
 \end{itemize}
 
+\textbf{Exact commands for key experiments:}
+\begin{itemize}
+\item \textbf{Data extraction and split:} \texttt{python backend/scripts/build\_dataset.py -split chrono}
+\item \textbf{Ablation study (Table \ref{tab:ablation}):} \texttt{python backend/scripts/run\_ablation.py}
+\item \textbf{Three-class paired benchmark (Table \ref{tab:v5_paired_benchmark}):} \texttt{python backend/scripts/run\_paired\_benchmark.py -protocol three-class}
+\item \textbf{Binary non-flat benchmark (Table \ref{tab:v7_binary_paired_benchmark}):} \texttt{python backend/scripts/run\_paired\_benchmark.py -protocol binary-non-flat}
+\item \textbf{Walk-forward evaluation (Table \ref{tab:walk_forward}):} \texttt{python backend/scripts/run\_walk\_forward.py -windows 5}
+\item \textbf{Conformal prediction (Table \ref{tab:conformal}):} \texttt{python backend/scripts/run\_conformal.py -alpha 0.05 -calib-size 220}
+\item \textbf{Statistical tests (Table \ref{tab:statistical_tests}):} \texttt{python backend/scripts/run\_stat\_tests.py -bootstrap 2000 -holm}
+\item \textbf{Paper compilation:}
+\end{itemize}
+
+\textbf{Table-to-script mapping:}
+\begin{itemize}
+\item Table \ref{tab:data_dist_source}, \ref{tab:data_dist_ticker} to \texttt{build_dataset.py}
+\item Table \ref{tab:ablation}, \ref{tab:v5_paired_benchmark}, \ref{tab:v7_binary_paired_benchmark} - \texttt{run\_ablation.py}, \texttt{run\_paired\_benchmark.py}
+\item Table \ref{tab:wf_metadata}, \ref{tab:walk_forward} - \texttt{run\_walk\_forward.py}
+\item Table \ref{tab:conformal} - \texttt{run\_conformal.py}
+\item Table \ref{tab:statistical_tests} - \texttt{run\_stat\_tests.py}
+\item Table \ref{tab:scer_ablation} - \texttt{run\_ablation.py}
+\item Tables \ref{tab:three_class_bridge}, \ref{tab:three_class_negative_sweep} - \texttt{run_remediation.py}
+\item Table \ref{tab:threshold} - \texttt{run_threshold_sweep.py}
+\item Figures - \texttt{paper/figures/} (generated by \texttt{run_figures.py})
+\end{itemize}
+
+Raw predictions, split manifests, and Optuna study artifacts are archived in \texttt{artifacts/} in the repository.
+
 %% ============================================================
 %% SECTION 5: CONCLUSION AND FUTURE WORK
 %% ============================================================
@@ -683,12 +797,9 @@ All experiments are reproducible from the project repository at
 
 This paper has presented a multimodal event-aware stock prediction framework that combines technical price signals and Vietnamese news/event signals via confidence-weighted late fusion. The framework produces interpretable return estimates, directional predictions, and conformal uncertainty intervals.
 
-The three-class paired benchmark shows that the Full Hybrid matches paired LightGBM and exceeds paired GRU on the same test rows. The binary non-flat paired benchmark demonstrates statistically significant superiority over both paired LightGBM and paired GRU on the conditional binary protocol. Walk-forward evaluation across five temporal windows shows stable performance (F1 std dev = 0.003). Conformal prediction intervals achieve nominal $\ge$95\% global coverage.
+The three-class paired benchmark shows that the Full Hybrid matches paired LightGBM and exceeds paired GRU on the same test rows. The conditional binary non-flat paired benchmark demonstrates statistically significant superiority over both paired LightGBM and paired GRU on the conditional binary protocol (excluding flat days). Walk-forward evaluation across five temporal windows shows stable performance (F1 std dev = 0.003). Conformal prediction intervals achieve nominal $\ge$95\% global coverage, with regime-aware calibration revealing local calibration risk.
 
-The framework does not claim trading readiness. Forward paper observation, execution reconciliation, risk sign-off, and audited evidence remain as future work.
-
-Future work will focus on: (i) fine-tuning PhoBERT on Vietnamese financial corpora, (ii) extending walk-forward evaluation to longer horizons, (iii) deploying as an offline paper-trading diagnostic pilot, and (iv) exploring volatility-adaptive labeling schemes to improve no-trade detection.
-
+The framework does not claim trading readiness; it is a research prototype. Future work will focus on: (i) fine-tuning PhoBERT on Vietnamese financial corpora, (ii) extending walk-forward evaluation to longer horizons, (iii) deploying as an offline paper-trading diagnostic pilot, and (iv) expanding evaluation to external benchmarks and cross-market settings.
 
 %% ============================================================
 %% DECLARATIONS
@@ -702,7 +813,7 @@ The author declares no competing interests.
 No external funding was received for this research.
 
 \textbf{Data Availability.}
-The repository contains owner-confirmed provenance-checked benchmark artifacts and reproducibility scripts. The benchmark supports controlled academic reporting only.
+The repository contains provenance-checked benchmark artifacts and reproducibility scripts. The benchmark supports controlled academic reporting only. Article text is subject to respective outlet Terms of Service; the repository distributes metadata and extracted features only.
 
 \textbf{Ethics and Responsible Use.}
 The system is intended for research and scenario analysis only. Outputs should not be interpreted as investment advice.

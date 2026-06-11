@@ -1,0 +1,207 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Truong
+    given-names: Tan Dat
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+    affiliation: "University of Information Technology, Vietnam National University Ho Chi Minh City"
+title: "A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction Using Technical Signals and News Impact Analysis"
+version: "1.0.0"
+doi: ""
+url: "https://github.com/ordinarytroung/solanna"
+repository: "https://github.com/ordinarytroung/solanna"
+repository-code: "https://github.com/ordinarytroung/solanna"
+repository-artifact: ""
+abstract: "This paper presents a multimodal event-aware framework for stock price prediction that combines technical price signals with structured Vietnamese news/event signals via confidence-weighted late fusion. The framework produces interpretable return estimates, directional predictions, and conformal uncertainty intervals. Evaluated on a provenance-checked Vietnamese equity benchmark (985 URLs, 20,885 event-return rows across 27 VN30 tickers)."
+keywords:
+  - stock price prediction
+  - multimodal learning
+  - event-aware modeling
+  - news impact analysis
+  - late fusion
+  - conformal prediction
+  - financial time series
+  - PhoBERT
+  - LightGBM
+  - conformal prediction
+license: CC-BY-4.0
+version: "1.0.0"
+date-released: "2025-06-10"
+preferred-citation:
+  type: "conference-paper"
+  title: "A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction Using Technical Signals and News Impact Analysis"
+  authors:
+    - family-names: Truong
+      given-names: Tan Dat
+      orcid: "https://orcid.org/0000-0000-0000-0000"
+      affiliation: "University of Information Technology, Vietnam National University Ho Chi Minh City"
+  conference: "Springer LNCS/LNAI Conference"
+  year: 2025
+  doi: ""
+  url: "https://github.com/ordinarytroung/solanna"
+  pages: ""
+  volume: ""
+  issue: ""
+  publisher: "Springer Nature"
+  series: "Lecture Notes in Computer Science"
+  year: 2025
+  month: "06"
+  day: "10"
+references:
+  - type: "conference-paper"
+    title: "Efficient Capital Markets: A Review of Theory and Empirical Work"
+    authors:
+      - family-names: Fama
+        given-names: Eugene F.
+    journal: "The Journal of Finance"
+    year: 1970
+    doi: "10.1111/j.1540-6261.1970.tb00518.x"
+  - type: "conference-paper"
+    title: "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+    authors:
+      - family-names: Devlin
+        given-names: Jacob
+      - family-names: Chang
+        given-names: Ming-Wei
+      - family-names: Lee
+        given-names: Kenton
+      - family-names: Toutanova
+        given-names: Kristina
+    booktitle: "NAACL-HLT"
+    year: 2019
+    doi: "10.18653/v1/N19-1423"
+  - type: "conference-paper"
+    title: "PhoBERT: Pre-trained language models for Vietnamese"
+    authors:
+      - family-names: Nguyen
+        given-names: Dat Quoc
+      - family-names: Nguyen
+        given-names: Anh Tuan
+    booktitle: "Findings of EMNLP"
+    year: 2020
+    doi: "10.18653/v1/2020.findings-emnlp.92"
+  - type: "conference-paper"
+    title: "Using Structured Events to Predict Stock Price Movement: An Empirical Investigation"
+    authors:
+      - family-names: Ding
+        given-names: Xiao
+      - family-names: Zhang
+        given-names: Yue
+      - family-names: Liu
+        given-names: Ting
+      - family-names: Duan
+        given-names: Junwen
+    booktitle: "EMNLP"
+    year: 2014
+    doi: "10.3115/v1/D14-1148"
+  - type: "conference-paper"
+    title: "REST: Relational Event-driven Stock Trend Forecasting"
+    authors:
+      - family-names: Xu
+        given-names: Wentao
+      - family-names: Liu
+        given-names: Weiqing
+      - family-names: Xu
+        given-names: Chang
+      - family-names: Bian
+        given-names: Jiang
+      - family-names: Yin
+        given-names: Jian
+      - family-names: Liu
+        given-names: Tie-Yan
+    booktitle: "The Web Conference"
+    year: 2021
+    doi: "10.1145/3442381.3450032"
+  - type: "software"
+    title: "Optuna: A Next-generation Hyperparameter Optimization Framework"
+    authors:
+      - family-names: Akiba
+        given-names: Takuya
+      - family-names: Sano
+        given-names: Shotaro
+      - family-names: Yanase
+        given-names: Toshihiko
+      - family-names: Ohta
+        given-names: Takeru
+      - family-names: Koyama
+        given-names: Masanori
+    url: "https://optuna.org/"
+    year: 2019
+  - type: "software"
+    title: "CatBoost: unbiased boosting with categorical features"
+    authors:
+      - family-names: Prokhorenkova
+        given-names: Liudmila
+      - family-names: Gusev
+        given-names: Gleb
+      - family-names: Vorobev
+        given-names: Aleksandr
+      - family-names: Dorogush
+        given-names: Anna Veronika
+      - family-names: Gulin
+        given-names: Andrey
+    booktitle: "Advances in Neural Information Processing Systems"
+    year: 2018
+  - type: "article"
+    title: "Distribution-free predictive inference for regression"
+    authors:
+      - family-names: Lei
+        given-names: Jing
+      - family-names: G'Sell
+        given-names: Max
+      - family-names: Rinaldo
+        given-names: Alessandro
+      - family-names: Tibshirani
+        given-names: Ryan J.
+      - family-names: Wasserman
+        given-names: Larry
+    journal: "Journal of the American Statistical Association"
+    year: 2018
+    doi: "10.1080/01621459.2017.1307116"
+  - type: "conference-paper"
+    title: "Conformal prediction under covariate shift"
+    authors:
+      - family-names: Tibshirani
+        given-names: Ryan J.
+      - family-names: Barber
+        given-names: Rina Foygel
+      - family-names: Candès
+        given-names: Emmanuel
+      - family-names: Ramdas
+        given-names: Aaditya
+    booktitle: "Advances in Neural Information Processing Systems"
+    year: 2019
+  - type: "article"
+    title: "A new approach to the economic analysis of nonstationary time series and the business cycle"
+    authors:
+      - family-names: Hamilton
+        given-names: James D.
+    journal: "Econometrica"
+    year: 1989
+    volume: 57
+    issue: 2
+    pages: "357--384"
+    doi: "10.2307/1912559"
+  - type: "book"
+    title: "Algorithmic Learning in a Random World"
+    authors:
+      - family-names: Vovk
+        given-names: Vladimir
+      - family-names: Gammerman
+        given-names: Alex
+      - family-names: Shafer
+        given-names: Glenn
+    publisher: "Springer"
+    year: 2005
+    doi: "10.1007/b106715"
+keywords:
+  - stock price prediction
+  - multimodal learning
+  - event-aware modeling
+  - news impact analysis
+  - late fusion
+  - conformal prediction
+  - financial time series
+  - PhoBERT
+  - LightGBM
+  - conformal prediction

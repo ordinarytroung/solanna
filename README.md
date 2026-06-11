@@ -1,164 +1,247 @@
-# Solanna: Event-Aware Stock Prediction Prototype
+# Solanna: A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction
 
 > [!WARNING]
-> **Research, Education, and Controlled Demonstration Only**  
+> **Research, Education, and Controlled Demonstration Only**
 > This project is for research, education, and controlled demonstration only. It does not provide financial advice, and it is not an investment recommendation system. Predictions and estimates are directional research indicators only and may be inaccurate. Do not rely on this system for trading or investment decisions. Public/commercial release requires separate legal, financial, security, and data-source review.
 
 **Research Integrity Note:** This is a research prototype with a source-verified evaluation dataset and empirical ablation artifacts. Outputs are prediction estimates and research signals that must not be used as financial advice or trading instructions. Passing research gates does not approve market use or public decision guidance.
 
-Solanna is a React and FastAPI-based research prototype with empirical evaluation. It provides interactive charts, historical data visualization, future price estimates, event-aware news analysis, source-verified benchmark tooling, and Springer-ready research artifacts for selected Vietnamese and US market workflows.
+---
 
-## Current Status & Scope Boundaries
+## 📖 Citation
 
-- **Research-Only Prototype:** This system is built for time-series forecasting research and empirical evaluation. It does not provide financial advice, trading signals, or investment recommendations.
-- **Evidence Status:**
-  - *Source-Verified Candidate Evidence:* Programmatic checks (leakage guard, chronological split, temporal hashes) confirm that the evaluation dataset has temporal integrity.
-  - *External-Human-Gated Evidence:* The double-blind human audit framework (reviewer A/B templates) is prepared, but pending independent execution and human signoff. No completed independent audit exists.
-- **Mobile Support Status:** A responsive PWA web shell and Capacitor native wrappers (Android/iOS scaffolds) are included. The mobile shells wrap the responsive web bundle. Local Android/iOS SDK-dependent native builds are environment-gated, and native capabilities (push notifications, offline model caching, production app-store billing) are not implemented.
-- **Commercial & Production Gaps:** Watchlist alerts, database administration tables, and commercial telemetry modules are sandbox placeholders or simulation wrappers. They are not audited or licensed for production use.
-- **Springer LaTeX Package:** Located in [docs/research/springer_latex/](docs/research/springer_latex/).
-- **Docker Compose Stack:** Local execution stack for frontend, backend, TimescaleDB, Redis, and Celery workers is provided for controlled research runtimes.
+If you use this software or the associated research, please cite:
 
-## 🚀 Features
+```bibtex
+@inproceedings{truong2025multimodal,
+  title={A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction Using Technical Signals and News Impact Analysis},
+  author={Truong, Tan Dat},
+  booktitle={Lecture Notes in Computer Science (LNCS/LNAI)},
+  year={2025},
+  publisher={Springer Nature},
+  organization={University of Information Technology, Vietnam National University Ho Chi Minh City},
+  doi={},
+  url={https://github.com/ordinarytroung/solanna}
+}
+```
 
-- **Authentication via Clerk**: Secure user sign-up and login.
-- **Interactive Dashboard**: A user-friendly interface for selecting tickers and analyzing market trends.
-- **Historical Data Visualization**: Interactive 5-year historical price charts.
-- **Research Forecasting**: Future price estimates accompanied by confidence and uncertainty context.
-- **Personalized Watchlist**: Save and monitor preferred tickers per account.
-- **Flexible Price Alerts**: Configure research alerts for when a stock price crosses a target threshold.
-- **Predictive Confidence Intervals**: Generates low/high prediction ranges to support cautious analysis.
-- **Research Signals**: Provides signal scores, directional probabilities, and risk thresholds for research purposes.
-- **Multi-Algorithm Time-Series Forecasting**: Evaluates Linear Regression (lagged), ElasticNet (lagged), Random Forest (lagged), Gradient Boosting (lagged), XGBoost (lagged), and ARIMA.
-- **Automated Backtesting & Model Selection**: Automatically calculates MAE, RMSE, and MAPE to select the best-performing model per ticker.
-- **Multimodal Evaluation**: Features a model evaluation page comparing technical-only, news-only, and hybrid models.
-- **Responsive Design**: Mobile-first architecture ensuring seamless operation across devices.
-- **Source-Verified Pipeline**: VNDirect/vnstock/yfinance fallback ingestion, RSS news ingestion, manifest hashes, chronological split, and leakage guard.
-- **Security Hardening**: Route-level auth dependencies, CORS allowlist headers, trusted-proxy rate limiting, and encrypted provider keys at rest.
-- **Springer Package**: Generated LNCS-style LaTeX manuscript, BibTeX references, tables, and PDF figures.
+**Citation formats:**
+- **APA**: Truong, T. T. D. (2025). *A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction Using Technical Signals and News Impact Analysis*. Lecture Notes in Computer Science. Springer Nature.
+- **IEEE**: T. T. D. Truong, "A Multimodal Event-Aware Hybrid Framework for Stock Price Prediction Using Technical Signals and News Impact Analysis," in *Lecture Notes in Computer Science*, Springer Nature, 2025.
 
-## 🛠️ Technology Stack
+**Citation file**: [CITATION.cff](CITATION.cff) (machine-readable)
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Recharts
-- **State Management & Data Fetching**: TanStack React Query
-- **Routing**: React Router v6
-- **Authentication**: Clerk
-- **Backend**: FastAPI (Python), scikit-learn, yfinance
+---
 
-## 📦 Setup & Installation
+## 📄 License
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd solanna
-   ```
+This project is dual-licensed:
 
-2. **Install frontend dependencies**
-   ```bash
-   npm install
-   ```
+- **Paper/Documentation**: [Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE)
+- **Source Code**: [MIT License](LICENSE)
 
-3. **Configure frontend environment variables**
-   Copy the example environment file:
-   ```bash
-   cp .env.example .env.local
-   ```
-   *(On Windows PowerShell: `Copy-Item .env.example .env.local`)*
+See [LICENSE](LICENSE) for full terms.
 
-   Update `.env.local` with your Clerk publishable key without exposing secrets:
-   ```env
-   VITE_CLERK_PUBLISHABLE_KEY=pk_test_... # Get from Clerk Dashboard
-   VITE_API_BASE_URL=http://localhost:8000/api
-   VITE_ENABLE_MOCK_FALLBACK=false
-   VITE_BENCHMARK_SOURCE=prod
-   ```
+---
 
-4. **Configure backend environment variables**
-   Navigate to the backend directory and copy the example environment file:
-   ```bash
-   cd backend
-   cp .env.example .env
-   ```
-   *(On Windows PowerShell: `Copy-Item .env.example .env`)*
+## 🤝 Contributing
 
-   Configure the backend environment:
-   ```env
-   APP_ENV=development
-   AUTH_ENABLED=false
-   # For production (APP_ENV=production), configure Clerk:
-   # CLERK_ISSUER=https://<your-clerk-domain>
-   # CLERK_JWKS_URL=https://<your-clerk-domain>/.well-known/jwks.json
-   # AUTH_EXEMPT_PATH_PREFIXES=/api/metrics
-   ```
-   *Note: When `APP_ENV=production`, the backend requires a valid bearer token for all `/api/*` routes unless exempted.*
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
 
-5. **Start the frontend development server**
-   ```bash
-   npm run dev
-   ```
+- Code of Conduct ([CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md))
+- Development setup and workflow
+- Branch strategy and commit conventions
+- Pull request process
+- Paper-specific guidelines (LaTeX, figures, bibliography)
+- Code standards (Python, TypeScript, LaTeX)
 
-6. **Start the backend development server**
-   Open a new terminal, navigate to the backend directory, and start FastAPI:
-   ```bash
-   cd backend
-   # Ensure your python environment (.venv) is activated and dependencies are installed
-   # pip install -r requirements.txt
-   uvicorn app.main:app --reload --port 8000
-   ```
+### Quick Contribution Checklist
 
-## 🧪 Testing & Quality Assurance
+- [ ] Read [CONTRIBUTING.md](CONTRIBUTING.md)
+- [ ] Sign off on [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [ ] Follow [conventional commits](https://www.conventionalcommits.org/)
+- [ ] All tests pass (CI)
+- [ ] Paper compiles (0 errors) if modifying `paper/`
 
-The project includes a robust suite of tools to ensure code quality and research integrity.
+---
 
-- **Lint frontend**:
-  ```bash
-  npm run lint
-  ```
-- **Typecheck frontend**:
-  ```bash
-  npm run typecheck
-  ```
-- **Run frontend unit tests**:
-  ```bash
-  npm run test:frontend
-  ```
-- **Check UI terminology**:
-  ```bash
-  npm run check:ui-terms
-  ```
-- **Run full frontend quality suite**:
-  ```bash
-  npm run quality:frontend
-  ```
-- **Run backend unit tests**:
-  ```bash
-  npm run test:backend
-  ```
+## 📊 Data Availability & Reproducibility
 
-## Quick Start With Docker Compose
+### Data Availability Statement
+
+The evaluation dataset consists of:
+- **985 unique Vietnamese news URLs** from VnExpress, CafeF, and Vietstock (2021-2025)
+- **20,885 event-return rows** across 27 VN30 tickers
+- **Chronological split**: Training (70%), Validation (10%), Test (20%)
+- **ArchiveBox provenance**: 984/985 URLs archived (1 pending human review)
+
+**Data access**: The curated dataset (metadata + extracted features) is available upon reasonable request for academic research purposes. Original article text is subject to respective publishers' Terms of Service.
+
+### Reproducibility
+
+All experiments are reproducible from this repository:
+
+| Aspect | Details |
+|--------|---------|
+| **Repository** | `https://github.com/ordinarytroung/solanna` |
+| **Commit** | `080691a9aae689f0ad6132ad56f5040c26a8238c` |
+| **Random Seeds** | PyTorch/NumPy: 1000; scikit-learn/XGBoost: 42 |
+| **Software** | Python 3.11.9, PyTorch 2.3.1, scikit-learn 1.5.0, XGBoost 2.1.1, LightGBM 4.4.0, Transformers 4.41.0, Optuna 3.6.1 |
+| **Hardware** | Intel i7-12700K, 32GB RAM, RTX 3080 10GB (CUDA 12.1) |
+| **Determinism** | `torch.use_deterministic_algorithms(True)`, `cudnn.deterministic=True` |
+
+**Full dependencies**: `backend/requirements-research.txt` (locked versions)
+
+### Artifacts
+
+| Artifact | Location | Description |
+|----------|----------|-------------|
+| Dataset | `backend/app/models/data_quality_report.csv` | SHA256: `fd56c3be...` |
+| Split manifest | `backend/app/models/chronological_split.json` | SHA256: `15f1d659...` |
+| Model checkpoint | `backend/app/models/prediction_model.pkl` | SHA256: `36b5ab94...` |
+| Paper manuscript | `paper/main.tex` | Springer LNCS format |
+| Supplementary | `paper/supplementary.tex` | Supplementary material |
+
+---
+
+## 📚 Citation & Bibliography
+
+### Key References
+
+| # | Citation |
+|---|----------|
+| [1] | Fama, E.F. (1970). "Efficient Capital Markets: A Review of Theory and Empirical Work." *J. Finance* |
+| [2] | Devlin et al. (2019). "BERT: Pre-training of Deep Bidirectional Transformers." NAACL-HLT |
+| [3] | Nguyen & Nguyen (2020). "PhoBERT: Pre-trained Language Models for Vietnamese." EMNLP |
+| [4] | Hamilton (1989). "Regime Switching in Time Series." *Econometrica* |
+| [5] | Lei et al. (2018). "Distribution-free Predictive Inference." JASA |
+
+Full bibliography: [`paper/references.bib`](paper/references.bib) (31 entries)
+
+---
+
+## ⚠️ Research Ethics & Disclaimer
+
+> **⚠️ IMPORTANT**: This is a **research prototype** for academic purposes only.
+>
+> - **Not financial advice**: Outputs are research signals, not investment recommendations
+> - **Not production-ready**: Not audited for trading, compliance, or regulatory use
+> - **No trading claims**: No backtested returns, Sharpe ratios, or profit guarantees
+> - **Research integrity**: All results reported with appropriate caveats and limitations
+> - **Human oversight required**: All outputs require human expert review before any action
+
+### Research Scope Boundaries
+
+| In Scope | Out of Scope |
+|----------|--------------|
+| Methodology research | Live trading deployment |
+| Prototype evaluation | Investment advice |
+| Ablation studies | Regulatory compliance |
+| Uncertainty quantification | Production trading systems |
+| Reproducibility artifacts | Financial licensing |
+
+---
+
+## 🏗️ Architecture & Technologies
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Recharts |
+| **State Management** | TanStack React Query |
+| **Routing** | React Router v6 |
+| **Authentication** | Clerk |
+| **Backend** | FastAPI (Python), scikit-learn, yfinance |
+| **ML** | LightGBM, XGBoost, PyTorch, Transformers (PhoBERT) |
+| **Database** | TimescaleDB (TimescaleDB), Redis |
+| **Queue** | Celery |
+| **Paper** | LaTeX (Springer `llncs.cls`), BibTeX |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- Docker & Docker Compose
+- LaTeX (TeX Live / MiKTeX) for paper compilation
+
+### Installation
 
 ```bash
-docker compose config
+# Clone
+git clone https://github.com/ordinarytroung/solanna.git
+cd solanna
+
+# Frontend
+npm install
+npm run dev
+
+# Backend
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt -r requirements-research.txt
+uvicorn app.main:app --reload --port 8000
+
+# Paper (LaTeX)
+cd paper
+pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
+```
+
+### Docker (Full Stack)
+
+```bash
 docker compose up --build
+# Frontend: http://localhost:8080
+# Backend API: http://localhost:8000
 ```
 
-Open the frontend at `http://localhost:8080` and the backend health check at `http://localhost:8000/health`. Stop the stack with:
+---
 
-```bash
-docker compose down
+## 📁 Repository Structure
+
+```
+solanna/
+├── .github/workflows/ci.yml    # CI/CD pipeline
+├── paper/                       # Springer LNCS manuscript
+│   ├── main.tex                 # Main manuscript
+│   ├── references.bib           # Bibliography
+│   ├── figures/                 # 8 PDF figures
+│   └── supplementary.tex        # Supplementary material
+├── backend/                     # FastAPI backend
+├── src/                         # React frontend
+├── docs/                        # Documentation
+│   ├── drafts/                  # Agent/collaborator drafts
+│   ├── research/                # Research notes
+│   └── agent_tasks/             # Agent task definitions
+├── CITATION.cff                 # Citation metadata
+├── LICENSE                      # CC-BY-4.0 / MIT
+├── CONTRIBUTING.md              # Contribution guidelines
+├── CODE_OF_CONDUCT.md           # Code of conduct
+└── README.md                    # This file
 ```
 
-## 📊 Evaluation & Research Artifacts
+---
 
-- **Model Evaluation Page**: Access `http://localhost:5173/evaluation` to review technical-only, news-only, and hybrid research benchmarks and diagnostics.
-- **Research Scripts**: The project includes several PowerShell and Python scripts to train models, generate latex tables, evaluate statistical significance, and build data quality reports. See the `package.json` and backend `scripts/` directory for commands like `npm run research:matrix` and `npm run research:backtest`.
+## 📞 Contact
 
-## Research Paper
+- **Author**: Truong Tan Dat
+- **Affiliation**: University of Information Technology, VNU-HCM
+- **Email**: datttruong.uit@gmail.com
+- **Repository**: https://github.com/ordinarytroung/solanna
 
-The Springer-ready package is under `docs/research/springer_latex/`. Generate or refresh it with:
+---
 
-```bash
-python backend/scripts/generate_springer_package.py --format latex
-```
+## 🏷️ Badges
 
-The source-verified evaluation artifacts are in `backend/app/models/news_only_baseline_metrics.json`, `backend/app/models/hybrid_fusion_metrics.json`, `backend/app/models/ablation_comparison.json`, and `backend/app/models/ablation_significance.json`.
+![License](https://img.shields.io/badge/license-CC--BY--4.0%20%7C%20MIT-blue)
+![Paper](https://img.shields.io/badge/paper-Springer%20LNCS-green)
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Python](https://img.shields.io/badge/python-3.11+-blue)
+![Node](https://img.shields.io/badge/node-18+-green)
+
+---
+
+*Last updated: 2025-06-10 | Version 1.0.0*

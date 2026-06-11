@@ -1,0 +1,321 @@
+name: LaTeX CI Pipeline
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'paper/**'
+      - '.github/workflows/ci.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'paper/**'
+      - '.github/workflows/ci.yml'
+
+env:
+  TEXLIVE_VERSION: "2024"
+
+jobs:
+  latex-compile:
+    name: Compile LaTeX (Springer LNCS)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up TeX Live
+        uses: xu-cheng/texlive-action@v1
+        with:
+          texlive_version: ${{ env.TEXLIVE_VERSION }}
+          packages: |
+            llncs
+            amsmath
+            amssymb
+            graphicx
+            booktabs
+            hyperref
+            xcolor
+            multirow
+            algorithm
+            algorithmic
+            float
+            ifthen
+            etoolbox
+            stringenc
+            l3backend
+            pdftexcmds
+            infwarerr
+            ltxcmds
+            kvsetkeys
+            kvdefinekeys
+            pdfescape
+            bigintcalc
+            bitset
+            intcalc
+            kvoptions
+            hycolor
+            nameref
+            gettitlestring
+            atbegshi-ltx
+            atveryend-ltx
+            uniquecounter
+            rerunfilecheck
+            hypotec
+
+      - name: Cache TeX Live
+        uses: actions/cache@v4
+        with:
+          path: /usr/local/texlive
+          key: texlive-${{ env.TEXLIVE_VERSION }}-${{ hashFiles('paper/*.tex', 'paper/references.bib') }}
+          restore-keys: |
+            texlive-${{ env.TEXLIVE_VERSION }}-
+
+      - name: Verify paper directory structure
+        run: |
+          ls -la paper/
+          echo "Checking required files..."
+          test -f paper/main.tex && echo "✅ main.tex exists"
+          test -f paper/references.bib && echo "✅ references.bib exists"
+          test -f paper/llncs.cls && echo "✅ llncs.cls exists"
+          test -f paper/splncs04.bst && echo "✅ splncs04.bst exists"
+          test -d paper/figures && echo "✅ figures/ directory exists"
+          test -f paper/supplementary.tex && echo "✅ supplementary.tex exists"
+
+      - name: Compile LaTeX (First pass)
+        run: |
+          cd paper
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+
+      - name: Run BibTeX
+        run: |
+          cd paper
+          bibtex main
+
+      - name: Compile LaTeX (Second pass)
+        run: |
+          cd paper
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+
+      - name: Compile LaTeX (Third pass)
+        run: |
+          cd paper
+          pdflatex -interaction=nonstopmode -halt-on-error main.tex
+
+      - name: Verify PDF output
+        run: |
+          cd paper
+          test -f main.pdf && echo "✅ PDF generated"
+          # Check page count
+          pages=$(pdftk main.pdf dump_data | grep NumberOfPages | awk '{print $2}' 2>/dev/null || pdfinfo main.pdf | grep Pages | awk '{print $2}')
+          echo "📄 Pages: $pages"
+          test -n "$pages" && [ "$pages" -ge 10 ] && echo "✅ Sufficient pages ($pages >= 10)" || echo "⚠️ Page count check: $pages pages"
+
+      - name: Check for LaTeX errors
+        run: |
+          cd paper
+          if grep -q "^!" main.log; then
+            echo "❌ LaTeX errors found:"
+            grep -A2 "^!" main.log
+            exit 1
+          else
+            echo "✅ No LaTeX errors"
+          fi
+
+      - name: Check for overfull/underfull boxes
+        run: |
+          cd paper
+          overfull=$(grep -c "Overfull" main.log || true)
+          underfull=$(grep -c "Underfull" main.log || true)
+          echo "📊 Overfull boxes: $overfull"
+          echo "📊 Underfull boxes: $underfull"
+          # Warning only, not failure
+
+      - name: Check for undefined references
+        run: |
+          cd paper
+          undefined=$(grep -c "undefined" main.log || true)
+          multiply=$(grep -c "multiply defined" main.log || true)
+          if [ "$undefined" -gt 0 ] || [ "$multiply" -gt 0 ]; then
+            echo "⚠️ Undefined references: $undefined, Multiply defined: $multiply"
+            # Warning only for now
+          else
+            echo "✅ All references resolved"
+          fi
+
+      - name: Check for missing citations
+        run: |
+          cd paper
+          missing_cites=$(grep -c "undefined" main.log || true)
+          if [ "$missing_cites" -gt 0 ]; then
+            echo "❌ Missing citations found"
+            grep "Citation.*undefined" main.log
+            exit 1
+          else
+            echo "✅ All citations resolved"
+          fi
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: springer-lncs-paper
+          path: paper/main.pdf
+          retention-days: 30
+
+      - name: Upload log artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: latex-compile-logs
+          path: paper/main.log
+          retention-days: 7
+
+  link-check:
+    name: Check Links and References
+    runs-on: ubuntu-latest
+    needs: latex-compile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for broken internal references
+        run: |
+          cd paper
+          # Check all \ref{} and \cite{} have corresponding \label{} and \bibitem{}
+          grep -oP '\\ref\{[^}]+\}' main.tex | sed 's/\\ref{\(.*\)}/\1/' | sort -u | while read ref; do
+            if ! grep -q "\\\\label{$ref}" *.tex; then
+              echo "❌ Undefined label: $ref"
+              exit 1
+            fi
+          done
+          echo "✅ All internal references valid"
+
+      - name: Check bibliography keys
+        run: |
+          cd paper
+          # Check all cited keys exist in .bib
+          grep -oP '\\cite[apft]?\{[^}]+\}' main.tex | sed 's/\\cite[apft]*{\([^}]*\)}/\1/' | tr ',' '\n' | sort -u | while read key; do
+            if ! grep -q "^@.*{$key," references.bib; then
+              echo "❌ Undefined citation key: $key"
+              exit 1
+            fi
+          done
+          echo "✅ All citation keys valid"
+
+  # Optional: Spell check
+  spelling-check:
+    name: Spell Check (LaTeX)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Spell check
+        uses: rojopolis/spellcheck-github-actions@0.25.0
+        with:
+          source_files: paper/*.tex
+          dictionary: en_US
+          ignore_words: |
+            Dat
+            Tan
+            Truong
+            VN30
+            LightGBM
+            PhoBERT
+            XGBoost
+            CatBoost
+            Optuna
+            SHAP
+            Overleaf
+            Springer
+            LNCS
+            LNAI
+            bibtex
+            pdflatex
+            amsmath
+            amssymb
+            graphicx
+            booktabs
+            hyperref
+            multirow
+            algorithmic
+            float
+            algorithm
+            hyperref
+            xcolor
+            multirow
+            booktabs
+            algorithmic
+            amssymb
+            graphics
+            inputenc
+            utf8
+            runningheads
+            llncs
+            splncs04
+            texorpdfstring
+            citet
+            citep
+            cite
+            ref
+            label
+            textit
+            textbf
+            texttt
+            textsc
+            textsf
+            textmd
+            textup
+            textnormal
+            emph
+            citep
+            citet
+            citations
+            references
+            bibliography
+            Springer
+            Nature
+            Elsevier
+            IEEE
+            ACM
+            arXiv
+            DOI
+            URL
+            ISBN
+            ISSN
+            ORCID
+            URL
+            https
+            http
+            www
+            com
+            org
+            edu
+            net
+            gov
+            mil
+            int
+
+  # Summary
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    needs: [latex-compile, link-check]
+    if: always()
+    steps:
+      - name: Status summary
+        run: |
+          echo "## CI Summary"
+          echo ""
+          echo "| Job | Status |"
+          echo "|-----|--------|"
+          echo "| LaTeX Compile | ${{ needs.latex-compile.result }} |"
+          echo "| Link Check | ${{ needs.link-check.result }} |"
+          echo "| Spell Check | ${{ needs.spell-check.result }} |"
+          echo ""
+          if [ "${{ needs.latex-compile.result }}" != "success" ] || [ "${{ needs.link-check.result }}" != "success" ]; then
+            echo "❌ **CI Failed**"
+            exit 1
+          else
+            echo "✅ **All checks passed**"
+          fi
